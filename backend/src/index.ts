@@ -14,14 +14,18 @@ dotenv.config()
 const app = express();
 const port = process.env.PORT;
 
-// ✅ Fix CORS issue by allowing frontend domain
+// ✅ Fix CORS preflight issue by allowing all origins and headers
 app.use(
   cors({
-    origin: "*", // Change this to your frontend domain for better security
-    credentials: true,
-    methods: ["GET", "POST", "OPTIONS"]
+    origin: "*",  // Change "*" to your frontend domain for security
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
   })
 );
+
+// ✅ Handle OPTIONS preflight request manually
+app.options("*", cors());
 
 app.use(express.json());
 app.use(bodyParser.json())
