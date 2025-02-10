@@ -14,7 +14,15 @@ dotenv.config()
 const app = express();
 const port = process.env.PORT;
 
-app.use(cors());
+// ✅ Fix CORS issue by allowing frontend domain
+app.use(
+  cors({
+    origin: "*", // Change this to your frontend domain for better security
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"]
+  })
+);
+
 app.use(express.json());
 app.use(bodyParser.json())
 
