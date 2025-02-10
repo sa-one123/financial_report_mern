@@ -15,25 +15,25 @@ const app = express();
 const port = process.env.PORT;
 
 // ✅ Fix CORS issue: Allow only requests from your frontend
-const allowedOrigins = [process.env.FRONTEND_DOMAIN]; // Add your frontend URL here
+const allowedOrigins = [`${process.env.FRONTEND_DOMAIN}`] as string[]; // Add your frontend URL here
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
   })
 );
 
-// ✅ Handle OPTIONS preflight requests
-app.options("*", cors());
+// ✅ Handle preflight CORS requests correctly
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", `${process.env.FRONTEND_DOMAIN}`);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(200);
+});
 
 app.use(express.json());
 app.use(bodyParser.json())
